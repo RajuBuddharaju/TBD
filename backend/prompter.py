@@ -80,6 +80,16 @@ def handle_response(response):
     else:
         print("Error:", response.status_code, response.text)
 
+def get_response_from_query(query):
+    API_KEY = load_api_key("API.key")
+    
+    response = make_request(API_KEY, query)
+    if response.status_code == 200:
+        result_string = response.json()['choices'][0]['message']['content']
+        return result_string
+    else:
+        return 'ruh roh looks like this request failed'
+
 def prompt_with_examples(text):
     # Load the key
     API_KEY = load_api_key("API.key")
