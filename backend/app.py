@@ -1,15 +1,19 @@
-from flask import Flask, request, jsonify
 import os
+
+from flask import Flask, request, jsonify
+
 from AtoT import transcribe_audio
 from prompter import prompt_with_examples
 
 app = Flask(__name__)
+
 # Configure upload folder and allowed extensions
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'wav', 'mp4', 'mp3'}
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-def allowed_file(filename):
+def allowed_file(filename: str):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/api/audio/analyze', methods=['POST'])
@@ -21,7 +25,7 @@ def analyze_audio():
     file = request.files['file']
 
     # If user does not select file, browser submits an empty part without filename
-    if file.filename == '':
+    if not file.filename:
         return jsonify({"error": "No selected file"}), 400
 
     if file and allowed_file(file.filename):

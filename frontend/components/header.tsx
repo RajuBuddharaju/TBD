@@ -1,5 +1,4 @@
 import { Shield } from "lucide-react"
-import { Button } from "@/components/ui/button"
 
 export function Header() {
   return (
@@ -24,12 +23,6 @@ export function Header() {
             <a href="#methodology" className="text-sm text-foreground hover:text-primary transition-colors">
               Methodology
             </a>
-            <a href="#about" className="text-sm text-foreground hover:text-primary transition-colors">
-              About
-            </a>
-            <Button size="sm" className="ml-2">
-              Get Started
-            </Button>
           </nav>
         </div>
       </div>

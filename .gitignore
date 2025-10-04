@@ -1,11 +1,15 @@
-# Python venv
-venv/
-__pycache__/
+# Nix
+.direnv/
+
+# Python shii
+**/venv/
+**/.venv/
+**/__pycache__/
 
 # "This build system contains fractal levels of stupidity"
-node_modules/
-next-env.d.ts
-**/uploads/
+**/node_modules/
+**/next-env.d.ts
+**/.next/
 
-.direnv/
-.next/
+# Other
+**/uploads/
