@@ -1,6 +1,6 @@
 # AIMI
 <div style="text-align: center;">
-**Automated Identification of Malicious Intent**
+<b>Automated Identification of Malicious Intent</b>
 </div>
 
 # Usage
