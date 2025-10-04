@@ -1,5 +1,5 @@
 """
-Provide functionality for converting audio to text.
+Provide functionality for converting audio to text with timestamps.
 """
 
 from __future__ import annotations
@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Optional, List
 import shutil
 import re
-
 
 # ---- Public return types ----------------------------------------------------
 
@@ -41,6 +40,100 @@ class Transcript:
     vtt: Optional[str] = None          # segment-based VTT 
     srt_sentences: Optional[str] = None  # sentence-based SRT 
     vtt_sentences: Optional[str] = None  # sentence-based VTT
+
+
+# ---- Public Function -------------------------------------------------------------
+
+def transcribe_audio(
+    audio: str | Path,
+    *,
+    language: Optional[str] = None,     # None = auto-detect
+    model_size: str = "small",          # "tiny" | "base" | "small" | "medium" | "large-v3"
+    vad_filter: bool = True,
+    beam_size: int = 5,
+    sentence_timestamps: bool = False,   # if you want per-sentence timing
+    word_timestamps: bool = False,      # if you want per-word timing
+    # this stuff might be unnecessary
+    emit_srt: bool = False,             # segment-based SRT
+    emit_vtt: bool = False,             # segment-based VTT
+    emit_srt_sentences: bool = False,   # sentence-based SRT
+    emit_vtt_sentences: bool = False,   # sentence-based VTT
+) -> Transcript:
+    """
+    Transcribe an audio file to text with segment and (optionally) sentence timestamps.
+
+    Returns
+    -------
+    Transcript
+        - text: full transcript
+        - segments: model segments (start/end/text + words if requested)
+        - sentences: sentence-level chunks with start/end/text
+        - srt / vtt: segment-based subtitles if requested
+        - srt_sentences / vtt_sentences: sentence-based subtitles if requested
+    """
+    audio_path = _resolve_path(audio)
+    model = _load_model(model_size)
+
+    need_words = word_timestamps or sentence_timestamps
+    segments_iter, _info = model.transcribe(
+        str(audio_path),
+        language=language,
+        vad_filter=vad_filter,
+        beam_size=beam_size,
+        word_timestamps=need_words,   # get words only if needed
+    )
+
+    segs: List[Segment] = []
+    text_parts: List[str] = []
+    all_words: List[Word] = []
+
+    for s in segments_iter:
+        seg_text = s.text.strip()
+        text_parts.append(seg_text)
+        words: List[Word] = []
+        if need_words and getattr(s, "words", None):
+            for w in s.words:
+                # faster-whisper uses w.word for the token text (includes spaces/punct)
+                words.append(Word(start=float(w.start), end=float(w.end), text=w.word))
+            all_words.extend(words)
+
+        segs.append(
+            Segment(
+                start=float(s.start),
+                end=float(s.end),
+                text=seg_text,
+                words=words,
+            )
+        )
+
+    full_text = " ".join(tp for tp in text_parts if tp)
+
+    # Build sentence-level timings
+    sentences: List[Sentence] = []
+    if sentence_timestamps:
+        sentences = _words_to_sentences(all_words)
+
+    # Subtitles
+    srt = _to_srt([(s.start, s.end, s.text) for s in segs]) if emit_srt else None
+    vtt = _to_vtt([(s.start, s.end, s.text) for s in segs]) if emit_vtt else None
+    srt_sent = _to_srt([(s.start, s.end, s.text) for s in sentences]) if emit_srt_sentences else None
+    vtt_sent = _to_vtt([(s.start, s.end, s.text) for s in sentences]) if emit_vtt_sentences else None
+
+    # If caller didn’t ask for words explicitly, clear them from segments
+    if not word_timestamps:
+        segs = [Segment(start=s.start, end=s.end, text=s.text, words=[]) for s in segs]
+
+    return Transcript(
+        text=full_text,
+        segments=segs,
+        sentences=sentences,
+        srt=srt,
+        vtt=vtt,
+        srt_sentences=srt_sent,
+        vtt_sentences=vtt_sent,
+    )
+
+
 
 
 # ---- Private utilities ------------------------------------------------------
@@ -150,95 +243,4 @@ def _words_to_sentences(
 
     return sentences
 
-
-# ---- Public API -------------------------------------------------------------
-
-def transcribe_audio(
-    audio: str | Path,
-    *,
-    language: Optional[str] = None,     # None = auto-detect
-    model_size: str = "small",          # "tiny" | "base" | "small" | "medium" | "large-v3"
-    vad_filter: bool = True,
-    beam_size: int = 5,
-    sentence_timestamps: bool = False,   # if you want per-sentence timing
-    word_timestamps: bool = False,      # if you want per-word timing
-    # this stuff might be unnecessary
-    emit_srt: bool = False,             # segment-based SRT
-    emit_vtt: bool = False,             # segment-based VTT
-    emit_srt_sentences: bool = False,   # sentence-based SRT
-    emit_vtt_sentences: bool = False,   # sentence-based VTT
-) -> Transcript:
-    """
-    Transcribe an audio file to text with segment and (optionally) sentence timestamps.
-
-    Returns
-    -------
-    Transcript
-        - text: full transcript
-        - segments: model segments (start/end/text + words if requested)
-        - sentences: sentence-level chunks with start/end/text
-        - srt / vtt: segment-based subtitles if requested
-        - srt_sentences / vtt_sentences: sentence-based subtitles if requested
-    """
-    audio_path = _resolve_path(audio)
-    model = _load_model(model_size)
-
-    need_words = word_timestamps or sentence_timestamps
-    segments_iter, _info = model.transcribe(
-        str(audio_path),
-        language=language,
-        vad_filter=vad_filter,
-        beam_size=beam_size,
-        word_timestamps=need_words,   # get words only if needed
-    )
-
-    segs: List[Segment] = []
-    text_parts: List[str] = []
-    all_words: List[Word] = []
-
-    for s in segments_iter:
-        seg_text = s.text.strip()
-        text_parts.append(seg_text)
-        words: List[Word] = []
-        if need_words and getattr(s, "words", None):
-            for w in s.words:
-                # faster-whisper uses w.word for the token text (includes spaces/punct)
-                words.append(Word(start=float(w.start), end=float(w.end), text=w.word))
-            all_words.extend(words)
-
-        segs.append(
-            Segment(
-                start=float(s.start),
-                end=float(s.end),
-                text=seg_text,
-                words=words,
-            )
-        )
-
-    full_text = " ".join(tp for tp in text_parts if tp)
-
-    # Build sentence-level timings
-    sentences: List[Sentence] = []
-    if sentence_timestamps:
-        sentences = _words_to_sentences(all_words)
-
-    # Subtitles
-    srt = _to_srt([(s.start, s.end, s.text) for s in segs]) if emit_srt else None
-    vtt = _to_vtt([(s.start, s.end, s.text) for s in segs]) if emit_vtt else None
-    srt_sent = _to_srt([(s.start, s.end, s.text) for s in sentences]) if emit_srt_sentences else None
-    vtt_sent = _to_vtt([(s.start, s.end, s.text) for s in sentences]) if emit_vtt_sentences else None
-
-    # If caller didn’t ask for words explicitly, clear them from segments
-    if not word_timestamps:
-        segs = [Segment(start=s.start, end=s.end, text=s.text, words=[]) for s in segs]
-
-    return Transcript(
-        text=full_text,
-        segments=segs,
-        sentences=sentences,
-        srt=srt,
-        vtt=vtt,
-        srt_sentences=srt_sent,
-        vtt_sentences=vtt_sent,
-    )
 
