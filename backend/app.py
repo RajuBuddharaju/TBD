@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # Configure upload folder and allowed extensions
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'wav', 'mp4', 'mp3'}
+ALLOWED_EXTENSIONS = {"wav", "mp3", "mp4", "webm"}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -35,7 +35,7 @@ def analyze_audio():
         file.save(filepath)
 
         # Transcribe the audio file using your AtoT module
-        tx = transcribe_audio(filepath, sentence_timestamps=True)
+        tx = transcribe_audio(filepath, sentence_timestamps=True, model_size="small")
 
         labels = []
         explanations = []
@@ -53,10 +53,21 @@ def analyze_audio():
                 "text": s.text,
                 "start": s.start,
                 "end": s.end,
-                "duration": s.end - s.start
+                "duration": s.end - s.start,
+                "label": label,
+                "explanation": explanation,
             }
-            for i, s in enumerate(tx.sentences, 1)
+            for s, label, explanation, in zip(tx.sentences, labels, explanations)
         ]
+
+
+    # text: string
+    # start: number
+    # end: number
+    # duration: number
+    # label?: string
+    # explanation?: string
+    # toxicity?: number
 
         return jsonify({
             "status": "success",

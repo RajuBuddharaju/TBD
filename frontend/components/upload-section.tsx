@@ -22,7 +22,7 @@ interface AnalysisResult {
   }>
 }
 
-const ALLOWED_TYPES = ["audio/mpeg", "audio/wav", "audio/mp3", "video/mp4", "video/quicktime", "audio/webm"]
+const ALLOWED_TYPES = ["audio/mpeg", "audio/wav", "audio/mp3", "video/mp4", "audio/webm"]
 const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
 
 export function UploadSection() {
