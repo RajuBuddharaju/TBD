@@ -27,7 +27,7 @@ def build_content_from_json(json_filepath, final_transcript):
     for ex in examples:
         content_lines.append(f"Transcript: {ex['Transcript']}")
         content_lines.append(f"Toxicity: {ex['Toxicity']}%")
-        content_lines.append(f"Label: {ex['Label']}")
+        content_lines.append(f"Hatespeech: {ex['Hatespeech']}")
         content_lines.append(f"Explanation: {ex['Explanation']}\n")
 
     # Generate toxicity for the final transcript
@@ -62,20 +62,28 @@ def make_request(API_KEY, content_str):
     # Make the request
     return requests.post(url, headers=headers, json=request_data)
 
+import re
+
 def handle_response(response):
     if response.status_code == 200:
         result_string = response.json()['choices'][0]['message']['content']
-        
-        label_match = re.search(r"Label:\s*(.*)", result_string)
+
+        # Updated regex to match "Hatespeech: true/false"
+        hatespeech_match = re.search(r"Hatespeech:\s*(.*)", result_string)
         explanation_match = re.search(r"Explanation:\s*(.*)", result_string, re.DOTALL)
 
         # Get the extracted values
-        label = label_match.group(1).strip() if label_match else None
+        hatespeech = hatespeech_match.group(1).strip().lower() if hatespeech_match else None
         explanation = explanation_match.group(1).strip() if explanation_match else None
-        
-        return (label, explanation)
+
+        # Convert to boolean if needed (optional)
+        if hatespeech in ("true", "false"):
+            hatespeech = hatespeech == "true"
+
+        return (hatespeech, explanation)
     else:
         print("Error:", response.status_code, response.text)
+        return (None, None)
 
 def get_response_from_query(query):
     API_KEY = load_api_key("API.key")
@@ -94,10 +102,12 @@ def prompt_with_examples(text):
     # Produce request content
     content_str = build_content_from_json("examples.json", text)
     
+    print(content_str)
+    
     # Get response from make_request 
     response = make_request(API_KEY, content_str)
     
     # Handle the response
     return handle_response(response)
 
-print(prompt_with_examples('We love the whites!'))
+print(prompt_with_examples('We love the men!'))
