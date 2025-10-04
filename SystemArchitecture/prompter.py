@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 
 # Load API key from a local file
 def load_api_key(filename="API.key"):
@@ -64,6 +65,21 @@ def make_request(API_KEY, content_str):
     # Make the request
     return requests.post(url, headers=headers, json=request_data)
 
+def handle_response(response):
+    if response.status_code == 200:
+        result_string = response.json()['choices'][0]['message']['content']
+        
+        label_match = re.search(r"Label:\s*(.*)", result_string)
+        explanation_match = re.search(r"Explanation:\s*(.*)", result_string, re.DOTALL)
+
+        # Get the extracted values
+        label = label_match.group(1).strip() if label_match else None
+        explanation = explanation_match.group(1).strip() if explanation_match else None
+        
+        return (label, explanation)
+    else:
+        print("Error:", response.status_code, response.text)
+
 def prompt_with_examples(text):
     # Load the key
     API_KEY = load_api_key("SystemArchitecture/API.key")
@@ -75,9 +91,4 @@ def prompt_with_examples(text):
     response = make_request(API_KEY, content_str)
     
     # Handle the response
-    if response.status_code == 200:
-        result = response.json()
-        print("Response:", result['choices'][0]['message']['content'])
-        return result
-    else:
-        print("Error:", response.status_code, response.text)
+    return handle_response(response)

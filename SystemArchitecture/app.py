@@ -34,7 +34,8 @@ def analyze_audio():
         tx = transcribe_audio(filepath, sentence_timestamps=True)
 
         for i, s in enumerate(tx.sentences, 1):
-            print(prompt_with_examples(s.text))
+            label, explanation = prompt_with_examples(s.text)
+            print(label)
 
         # Prepare the response with full transcript and sentence timings
         sentences = [
