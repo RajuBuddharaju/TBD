@@ -1,16 +1,14 @@
 from AtoT import transcribe_audio
 
+tx = transcribe_audio(
+    "/home/raju/Downloads/Hate.mp4",
+    sentence_timestamps=True,
+)
 
-file = "/home/raju/Downloads/Hate.mp4"
+# Full transcript first
+print(tx.text, end="\n\n")
 
-# Per-segment timestamps
-tx = transcribe_audio(file, model_size="small", emit_srt=True)
-print(tx.text)                 # full transcript
-print(tx.segments[0].start)    # e.g., 0.0
-print(tx.segments[0].end)      # e.g., 3.2
-print(tx.segments[0].text)     # segment text
-open("out.srt", "w").write(tx.srt or "")
-
-# With per-word timestamps too
-tx_words = transcribe_audio(file, word_timestamps=True)
-print(tx_words.segments[0].words[:3])  # [Word(start=..., end=..., text='Hello'), ...]
+# Per-sentence: print the sentence text first, then its timings
+for i, s in enumerate(tx.sentences, 1):
+    print(f"{i}. {s.text}")
+    print(f"   start={s.start:.2f}s  end={s.end:.2f}s  dur={s.end - s.start:.2f}s\n")

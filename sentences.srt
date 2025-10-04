@@ -1,0 +1,7 @@
+1
+00:00:00,050 --> 00:00:03,750
+BING BONG! BING BONG, HELLO!
+
+2
+00:00:04,330 --> 00:00:05,010
+How are you doing?
