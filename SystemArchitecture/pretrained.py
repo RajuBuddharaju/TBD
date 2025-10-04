@@ -8,7 +8,7 @@ Hate Speech Detection Pipeline
 """
 
 # === Imports ===
-from SystemArchitecture.AtoT import transcribe_audio
+from AtoT import transcribe_audio
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 import json
@@ -138,18 +138,11 @@ def classify_audio_file(audio_path: str, output_path: str = "classified_output.j
 
 # === 5. Direct Text Testing (no audio) ===
 
-def test_sample_texts(output_path: str = "hate_confidence_results.json"):
+def test_sample_texts(sample_texts, output_path: str = "hate_confidence_results.json"):
     """
     Test the hate confidence function on predefined sample texts.
     Saves output as JSON.
     """
-    sample_texts = [
-        "I hate British people.",
-        "Flowers are nice.",
-        "Go and kill yourself.",
-        "You're an idiot."
-    ]
-
     results = []
     for text in sample_texts:
         conf = get_hate_confidence(text)
@@ -164,11 +157,11 @@ def test_sample_texts(output_path: str = "hate_confidence_results.json"):
     print(f"✅ Results saved to {output_path}")
 
 
-# === 6. Main Entry Point ===
+# # === 6. Main Entry Point ===
 
-if __name__ == "__main__":
-    # --- Option A: full pipeline (audio → classification) ---
-    # classify_audio_file("C:\\Users\\baydi\\Downloads\\hatespeech-junctionx.mp4")
+# if __name__ == "__main__":
+#     # --- Option A: full pipeline (audio → classification) ---
+#     # classify_audio_file("C:\\Users\\baydi\\Downloads\\hatespeech-junctionx.mp4")
 
-    # --- Option B: quick text-based confidence testing ---
-    test_sample_texts()
+#     # --- Option B: quick text-based confidence testing ---
+#     test_sample_texts()
