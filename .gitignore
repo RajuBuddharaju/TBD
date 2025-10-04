@@ -6,6 +6,9 @@
 **/.venv/
 **/__pycache__/
 
+# API key
+**/API.key/
+
 # "This build system contains fractal levels of stupidity"
 **/node_modules/
 **/next-env.d.ts
