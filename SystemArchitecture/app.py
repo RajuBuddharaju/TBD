@@ -33,9 +33,11 @@ def analyze_audio():
         # Transcribe the audio file using your AtoT module
         tx = transcribe_audio(filepath, sentence_timestamps=True)
 
+        # Loop over setences and look for labelss
         for i, s in enumerate(tx.sentences, 1):
             label, explanation = prompt_with_examples(s.text)
-            print(label)
+
+        # hand sentences to Beg's code
 
         # Prepare the response with full transcript and sentence timings
         sentences = [
