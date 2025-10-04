@@ -82,10 +82,10 @@ def handle_response(response):
 
 def prompt_with_examples(text):
     # Load the key
-    API_KEY = load_api_key("SystemArchitecture/API.key")
+    API_KEY = load_api_key("API.key")
 
     # Produce request content
-    content_str = build_content_from_json("SystemArchitecture/examples.json", text, 50)
+    content_str = build_content_from_json("examples.json", text, 50)
     
     # Get response from make_request 
     response = make_request(API_KEY, content_str)

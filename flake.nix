@@ -127,11 +127,14 @@
             num2words
             emoji
             wikipedia
+
+            flask
           ]);
 
         packages = with pkgs; [
           pyright
           python
+          nodejs
         ];
 
       in {

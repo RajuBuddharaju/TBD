@@ -2,4 +2,10 @@
 venv/
 __pycache__/
 
+# "This build system contains fractal levels of stupidity"
+node_modules/
+next-env.d.ts
+**/uploads/
+
 .direnv/
+.next/
