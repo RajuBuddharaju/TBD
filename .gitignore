@@ -13,3 +13,6 @@
 
 # Other
 **/uploads/
+
+# Local env
+.env.local
