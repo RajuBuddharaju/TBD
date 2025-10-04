@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import os
-from AtoT import transcribe_audio  # Make sure this import works in your environment
+from SystemArchitecture.AtoT import transcribe_audio
+from SystemArchitecture.Prompter import prompt_with_examples
 
 app = Flask(__name__)
 # Configure upload folder and allowed extensions
@@ -31,6 +32,9 @@ def analyze_audio():
 
         # Transcribe the audio file using your AtoT module
         tx = transcribe_audio(filepath, sentence_timestamps=True)
+
+        for i, s in enumerate(tx.sentences, 1):
+            print(prompt_with_examples(s.text))
 
         # Prepare the response with full transcript and sentence timings
         sentences = [

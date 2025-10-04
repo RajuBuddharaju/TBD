@@ -1,4 +1,4 @@
-from AtoT import transcribe_audio
+from SystemArchitecture.AtoT import transcribe_audio
 
 tx = transcribe_audio(
     "C:\\Users\\20221051\\Downloads\\BegumHate.mp4",

@@ -42,39 +42,42 @@ def build_content_from_json(json_filepath, final_transcript, final_toxicity):
     
     return "\n".join(content_lines)
 
-# Load the key
-API_KEY = load_api_key("SystemArchitecture/API.key")
+def make_request(API_KEY, content_str):
+    # Mistral API endpoint
+    url = "https://api.mistral.ai/v1/chat/completions"
 
-text = "Someone stole my grandmother's garden gnome in Birmingham. These pesky British people."
+    # Set up headers
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
 
-# Produce request content
-content_str = build_content_from_json("SystemArchitecture/examples.json", text, 50)
-print(content_str)
+    # Define the message for the chat
+    request_data = {
+        "model": "mistral-tiny",  # or "mistral-small", "mistral-medium"
+        "messages": [
+            {"role": "user", "content": content_str}
+        ],
+        "temperature": 0.1
+    }
 
-# Mistral API endpoint
-url = "https://api.mistral.ai/v1/chat/completions"
+    # Make the request
+    return requests.post(url, headers=headers, json=request_data)
 
-# Set up headers
-headers = {
-    "Authorization": f"Bearer {API_KEY}",
-    "Content-Type": "application/json"
-}
+def prompt_with_examples(text):
+    # Load the key
+    API_KEY = load_api_key("SystemArchitecture/API.key")
 
-# Define the message for the chat
-request_data = {
-    "model": "mistral-tiny",  # or "mistral-small", "mistral-medium"
-    "messages": [
-        {"role": "user", "content": content_str}
-    ],
-    "temperature": 0.1
-}
-
-# Make the request
-response = requests.post(url, headers=headers, json=request_data)
-
-# Handle the response
-if response.status_code == 200:
-    result = response.json()
-    print("Response:", result['choices'][0]['message']['content'])
-else:
-    print("Error:", response.status_code, response.text)
+    # Produce request content
+    content_str = build_content_from_json("SystemArchitecture/examples.json", text, 50)
+    
+    # Get response from make_request 
+    response = make_request(API_KEY, content_str)
+    
+    # Handle the response
+    if response.status_code == 200:
+        result = response.json()
+        print("Response:", result['choices'][0]['message']['content'])
+        return result
+    else:
+        print("Error:", response.status_code, response.text)
