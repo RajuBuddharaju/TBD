@@ -65,9 +65,7 @@ def analyze_audio():
             "metadata": {
                 "filename": file.filename,
                 "filepath": filepath
-            },
-            "label": label,
-            "explanation": explanation
+            }
         })
 
     return jsonify({"error": "File type not allowed"}), 400
