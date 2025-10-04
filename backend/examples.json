@@ -1,121 +1,101 @@
 [
     {
         "Transcript": "Minorities should leave this country or else",
-        "Toxicity": 76.4,
         "Label": "Hatespeech",
         "Explanation": "The implication of 'or else' is incitement of violence and threatens a specific group based on identity."
     },
     {
         "Transcript": "Hi how are you?",
-        "Toxicity": 0.4,
         "Label": "NOT Hatespeech",
         "Explanation": "There is no mention of a hated group of people; the tone is polite and neutral."
     },
     {
         "Transcript": "What happened in Tiananmen Square was justified",
-        "Toxicity": 10.5,
         "Label": "Hatespeech",
         "Explanation": "Despite low toxicity, the statement supports mass violence, indirectly endorsing harm against dissenting groups."
     },
     {
         "Transcript": "All immigrants are criminals and parasites",
-        "Toxicity": 92.1,
         "Label": "Hatespeech",
         "Explanation": "Generalizing and dehumanizing language directed at an entire group constitutes explicit hate speech."
     },
     {
         "Transcript": "I think that policies should be fair to everyone, regardless of background",
-        "Toxicity": 1.2,
         "Label": "NOT Hatespeech",
         "Explanation": "Promotes inclusion and fairness without targeting or excluding any group."
     },
     {
         "Transcript": "Those people are ruining our way of life",
-        "Toxicity": 68.3,
         "Label": "Hatespeech",
         "Explanation": "The vague reference to 'those people' is a dog whistle, often used to scapegoat minority groups."
     },
     {
         "Transcript": "Let's celebrate our diversity and learn from each other",
-        "Toxicity": 0.1,
         "Label": "NOT Hatespeech",
         "Explanation": "Encourages unity and mutual respect without any hateful or exclusionary tone."
     },
     {
         "Transcript": "Go back to where you came from",
-        "Toxicity": 83.9,
         "Label": "Hatespeech",
         "Explanation": "Common xenophobic phrase used to marginalize people perceived as outsiders."
     },
     {
         "Transcript": "You're so annoying when you talk about veganism",
-        "Toxicity": 18.4,
         "Label": "NOT Hatespeech",
         "Explanation": "Rude or personal criticism, but not directed at a protected group or identity."
     },
     {
         "Transcript": "All Jews control the media",
-        "Toxicity": 91.5,
         "Label": "Hatespeech",
         "Explanation": "Classic anti-Semitic trope promoting conspiracy theories and group-based hatred."
     },
     {
         "Transcript": "I'm really tired of corrupt politicians, they ruin everything",
-        "Toxicity": 24.7,
         "Label": "NOT Hatespeech",
         "Explanation": "Critical of individuals or roles (politicians), but not based on identity or protected group."
     },
     {
         "Transcript": "Black people are just naturally more violent",
-        "Toxicity": 95.3,
         "Label": "Hatespeech",
         "Explanation": "Promotes a harmful racist stereotype implying inherent criminality."
     },
     {
         "Transcript": "Your opinion is dumb, but I respect your right to have it",
-        "Toxicity": 12.9,
         "Label": "NOT Hatespeech",
         "Explanation": "Contains mild insult but affirms respect and is not targeted hate."
     },
     {
         "Transcript": "Muslims should be banned from this country",
-        "Toxicity": 87.6,
         "Label": "Hatespeech",
         "Explanation": "Expresses desire for exclusion based on religious identity, which is discriminatory and hateful."
     },
     {
         "Transcript": "Can we talk about the weather instead of politics?",
-        "Toxicity": 0.2,
         "Label": "NOT Hatespeech",
         "Explanation": "Neutral conversational redirection with no hate or bias."
     },
     {
         "Transcript": "These refugees are like cockroaches",
-        "Toxicity": 96.4,
         "Label": "Hatespeech",
         "Explanation": "Dehumanizing language using metaphor associated with genocide rhetoric."
     },
     {
         "Transcript": "Trans people are mentally ill freaks",
-        "Toxicity": 93.7,
         "Label": "Hatespeech",
         "Explanation": "Combines slurs and pathologizing language targeting a marginalized identity group."
     },
     {
         "Transcript": "People who commit crimes should face justice",
-        "Toxicity": 8.3,
         "Label": "NOT Hatespeech",
         "Explanation": "A general opinion about justice without identity-based targeting or hate."
     },
     {
         "Transcript": "White people are the worst thing to happen to this planet",
-        "Toxicity": 89.4,
         "Label": "Hatespeech",
         "Explanation": "Generalized hateful comment targeting a racial group, regardless of historical context."
     },
     {
         "Transcript": "I don't agree with your religion, but I respect your right to practice it",
-        "Toxicity": 3.2,
         "Label": "NOT Hatespeech",
         "Explanation": "Demonstrates disagreement without hate; emphasizes tolerance."
     }

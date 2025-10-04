@@ -24,7 +24,6 @@ HATE_THRESHOLD = 0.5  # adjustable threshold for multi-label detection
 
 
 # === 2. Core Classification Functions ===
-
 def classify_text(text: str):
     """
     Run toxic-bert classification on a single sentence.
@@ -70,7 +69,6 @@ def get_hate_confidence(text: str) -> float:
 
 
 # === 3. Explanation Logic ===
-
 def explain_classification(text, scores):
     """
     Generate a human-readable explanation for the classification.
@@ -105,7 +103,6 @@ def explain_classification(text, scores):
 
 
 # === 4. Audio → Text → Classification Pipeline ===
-
 def classify_audio_file(audio_path: str, output_path: str = "classified_output.json"):
     """
     Transcribe audio, classify each sentence, and save results to JSON.
@@ -137,7 +134,6 @@ def classify_audio_file(audio_path: str, output_path: str = "classified_output.j
 
 
 # === 5. Direct Text Testing (no audio) ===
-
 def test_sample_texts(sample_texts, output_path: str = "hate_confidence_results.json"):
     """
     Test the hate confidence function on predefined sample texts.

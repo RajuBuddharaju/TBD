@@ -44,9 +44,8 @@ def analyze_audio():
             label, explanation = prompt_with_examples(s.text)
             labels.append(label)
             explanations.append(explanation)
-
-        # hand sentences to Beg's code
         
+        # Build examples.json based on that
 
         # Prepare the response with full transcript and sentence timings
         sentences = [
