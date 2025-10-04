@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import os
-from SystemArchitecture.AtoT import transcribe_audio
-from SystemArchitecture.Prompter import prompt_with_examples
+from AtoT import transcribe_audio
+from prompter import prompt_with_examples
 
 app = Flask(__name__)
 # Configure upload folder and allowed extensions
