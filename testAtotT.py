@@ -1,7 +1,7 @@
 from AtoT import transcribe_audio
 
 tx = transcribe_audio(
-    "/home/raju/Downloads/Hate.mp4",
+    "C:\\Users\\20221051\\Downloads\\BegumHate.mp4",
     sentence_timestamps=True,
 )
 

@@ -37,7 +37,7 @@
     },
     {
         "Transcript": "Let's celebrate our diversity and learn from each other",
-        "Toxicity": 0.0,
+        "Toxicity": 0.1,
         "Label": "NOT Hatespeech",
         "Explanation": "Encourages unity and mutual respect without any hateful or exclusionary tone."
     },

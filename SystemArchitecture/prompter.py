@@ -42,13 +42,13 @@ def build_content_from_json(json_filepath, final_transcript, final_toxicity):
     
     return "\n".join(content_lines)
 
-
-
 # Load the key
 API_KEY = load_api_key("SystemArchitecture/API.key")
 
+text = "Someone stole my grandmother's garden gnome in Birmingham. These pesky British people."
+
 # Produce request content
-content_str = build_content_from_json("SystemArchitecture/examples.json", "I hate dynamically typed languages", 100)
+content_str = build_content_from_json("SystemArchitecture/examples.json", text, 50)
 print(content_str)
 
 # Mistral API endpoint
@@ -61,16 +61,16 @@ headers = {
 }
 
 # Define the message for the chat
-data = {
+request_data = {
     "model": "mistral-tiny",  # or "mistral-small", "mistral-medium"
     "messages": [
         {"role": "user", "content": content_str}
     ],
-    "temperature": 0.7
+    "temperature": 0.1
 }
 
 # Make the request
-response = requests.post(url, headers=headers, json=data)
+response = requests.post(url, headers=headers, json=request_data)
 
 # Handle the response
 if response.status_code == 200:
