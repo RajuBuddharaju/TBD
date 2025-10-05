@@ -1,9 +1,9 @@
 import os
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 
 from AtoT import transcribe_audio
-from prompter import prompt_with_examples
+from prompter import PrompterContext
 
 app = Flask(__name__)
 
@@ -12,12 +12,19 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {"wav", "mp3", "mp4", "webm"}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config["SECRET_KEY"] = "changeme"
+
 
 def allowed_file(filename: str):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/api/audio/analyze', methods=['POST'])
 def analyze_audio():
+    if "prompter_ctx" not in session.keys() or not session["prompter_ctx"]:
+        session["prompter_ctx"] = PrompterContext("examples.json").to_dict()
+
+    prompter_ctx = PrompterContext.from_dict(session["prompter_ctx"])
+
     # Check if the post request has the file part
     if 'file' not in request.files:
         return jsonify({"error": "No file provided"}), 400
@@ -37,15 +44,8 @@ def analyze_audio():
         # Transcribe the audio file using your AtoT module
         tx = transcribe_audio(filepath, sentence_timestamps=True, model_size="small")
 
-        labels = []
-        explanations = []
-        # Loop over setences and look for labelss
         for i, s in enumerate(tx.sentences, 1):
-            label, explanation = prompt_with_examples(s.text)
-            labels.append(label)
-            explanations.append(explanation)
-        
-        # Build examples.json based on that
+            _ = prompter_ctx.make_new_prompt(s.text)
 
         # Prepare the response with full transcript and sentence timings
         sentences = [
@@ -54,20 +54,12 @@ def analyze_audio():
                 "start": s.start,
                 "end": s.end,
                 "duration": s.end - s.start,
-                "label": label,
-                "explanation": explanation,
+                "label": result["Hatespeech"],
+                "explanation": result["Explanation"],
+                "toxicity": result["Toxicity"],
             }
-            for s, label, explanation, in zip(tx.sentences, labels, explanations)
+            for s, result in zip(tx.sentences, prompter_ctx.history)
         ]
-
-
-    # text: string
-    # start: number
-    # end: number
-    # duration: number
-    # label?: string
-    # explanation?: string
-    # toxicity?: number
 
         return jsonify({
             "status": "success",

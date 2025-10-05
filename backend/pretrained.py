@@ -47,25 +47,21 @@ def get_labels(scores):
     return active_labels or ["neutral"]
 
 
-def get_hate_confidence(text: str) -> float:
+def get_hate_confidence(text: str) -> str:
     """
     Compute an overall 'hate speech confidence' score for the text.
     Uses relevant toxic-bert output categories.
     """
+    THRESHOLD = 0.5
+
     scores = classify_text(text)
     hate_labels = ["toxic", "severe_toxic", "threat", "insult", "identity_hate"]
     hate_scores = [scores[lbl] for lbl in hate_labels if lbl in scores]
 
     if not hate_scores:
-        return 0.0
+        return "unknown"
 
-    # Option 1: strongest signal (max)
-    hate_confidence = max(hate_scores)
-
-    # Option 2 (alternative): average for smoother scoring
-    # hate_confidence = sum(hate_scores) / len(hate_scores)
-
-    return round(hate_confidence, 4)
+    return hate_labels[hate_scores.index(max(hate_scores))].replace("_", " ") if max(hate_scores) > THRESHOLD else "not toxic"
 
 
 # === 3. Explanation Logic ===

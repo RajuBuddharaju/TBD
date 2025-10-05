@@ -3,111 +3,132 @@ import json
 import re
 import pretrained
 
-# Load API key from a local file
-def load_api_key(filename="API.key"):
-    try:
-        with open(filename, "r") as file:
-            return file.read().strip()
-    except FileNotFoundError:
-        raise Exception(f"API key file '{filename}' not found.")
-    except Exception as e:
-        raise Exception(f"Error reading API key: {e}")
+from typing import Any
 
-def build_content_from_json(json_filepath, final_transcript):
-    with open(json_filepath, "r") as f:
-        examples = json.load(f)
+class PrompterContext:
+    examples: list[dict[str, Any]]
+    history: list[dict[str, Any]]
+    api_key: str
+    url: str = "https://api.mistral.ai/v1/chat/completions"
 
-    # Generate toxicity for each example using get_hate_confidence
-    for ex in examples:
-        ex["Toxicity"] = round(pretrained.get_hate_confidence(ex["Transcript"]) * 100, 2)
+    def __init__(self, examples: str | list[dict[str, Any]], url: str | None = None, history: list[dict[str, Any]] = []):
+        self.history = []
+        self.api_key = PrompterContext._load_api_key()
 
-    # Build the examples part
-    content_lines = ["Using these examples, complete the final label:\n"]
+        if isinstance(examples, str):
+            with open(examples, "r") as f:
+                self.examples = json.load(f)
+                for ex in self.examples:
+                    ex["Toxicity"] = pretrained.get_hate_confidence(ex["Transcript"])
+        else:
+            self.examples = examples
 
-    for ex in examples:
-        content_lines.append(f"Transcript: {ex['Transcript']}")
-        content_lines.append(f"Toxicity: {ex['Toxicity']}%")
-        content_lines.append(f"Hatespeech: {ex['Hatespeech']}")
-        content_lines.append(f"Explanation: {ex['Explanation']}\n")
+        if url is not None:
+            self.url = url 
 
-    # Generate toxicity for the final transcript
-    final_toxicity = round(pretrained.get_hate_confidence(final_transcript) * 100, 2)
+    def to_dict(self):
+        return {
+            "examples": self.examples,
+            "history": self.history,
+            "api_key": self.api_key,
+            "url": self.url,
+        }
 
-    # Add the final example to be labeled
-    content_lines.append("Using the above examples, complete the final label and explanation:\n")
-    content_lines.append(f"Transcript: {final_transcript}")
-    content_lines.append(f"Toxicity: {final_toxicity}%")
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]):
+        return cls(
+            examples=data.get("examples", []),
+            history=data.get("history", []),
+            url=data.get("url", "https://api.mistral.ai/v1/chat/completions")
+        )
 
-    return "\n".join(content_lines)
+    @staticmethod
+    def _load_api_key(filename: str = "API.key"):
+        try:
+            with open(filename, "r") as file:
+                return file.read().strip()
+        except FileNotFoundError:
+            raise FileNotFoundError(f"API key file '{filename}' not found.")
+        except Exception as e:
+            raise Exception(f"Error reading API key: {e}")
 
-def make_request(API_KEY, content_str):
-    # Mistral API endpoint
-    url = "https://api.mistral.ai/v1/chat/completions"
 
-    # Set up headers
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
+    def make_new_prompt(self, transcript: str):
+        content_lines = self.content_lines()
+        toxicity = pretrained.get_hate_confidence(transcript)
 
-    # Define the message for the chat
-    request_data = {
-        "model": "mistral-tiny",  # or "mistral-small", "mistral-medium"
-        "messages": [
-            {"role": "user", "content": content_str}
-        ],
-        "temperature": 0.1
-    }
+        # Add the final example to be labeled
+        content_lines.append("Using the above examples, complete the final label and explanation:\n")
+        content_lines.append(f"Transcript: {transcript}")
+        content_lines.append(f"Toxicity: {toxicity}")
 
-    # Make the request
-    return requests.post(url, headers=headers, json=request_data)
+        new_history_item = self._make_request("\n".join(content_lines)) | {
+            "Transcript": transcript,
+            "Toxicity": f"{toxicity}",
+        }
+        self.history.append(new_history_item)
+        return new_history_item
 
-import re
+    def content_lines(self) -> list[str]:
+        content_lines = ["Using these examples, complete the final label:"]
+        for ex in self.examples:
+            content_lines.append(f"Transcript: {ex['Transcript']}")
+            content_lines.append(f"Toxicity: {ex['Toxicity']}")
+            content_lines.append(f"Hatespeech: {ex['Hatespeech']}")
+            content_lines.append(f"Explanation: {ex['Explanation']}\n")
 
-def handle_response(response):
-    if response.status_code == 200:
-        result_string = response.json()['choices'][0]['message']['content']
+        for ex in self.history:
+            content_lines.append(f"Transcript: {ex['Transcript']}")
+            content_lines.append(f"Toxicity: {ex['Toxicity']}")
+            content_lines.append(f"Hatespeech: {ex['Hatespeech']}")
+            content_lines.append(f"Explanation: {ex['Explanation']}\n")
 
-        # Updated regex to match "Hatespeech: true/false"
-        hatespeech_match = re.search(r"Hatespeech:\s*(.*)", result_string)
-        explanation_match = re.search(r"Explanation:\s*(.*)", result_string, re.DOTALL)
+        return content_lines
 
-        # Get the extracted values
-        hatespeech = hatespeech_match.group(1).strip().lower() if hatespeech_match else None
-        explanation = explanation_match.group(1).strip() if explanation_match else None
+    def _make_request(self, content: str) -> dict[str, Any]:
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
 
-        # Convert to boolean if needed (optional)
-        if hatespeech in ("true", "false"):
-            hatespeech = hatespeech == "true"
+        request = {
+            "model": "mistral-tiny",  # or "mistral-small", "mistral-medium"
+            "messages": [
+                {"role": "user", "content": content}
+            ],
+            "temperature": 0.1
+        }
 
-        return (hatespeech, explanation)
-    else:
-        print("Error:", response.status_code, response.text)
-        return (None, None)
+        # Make the request
+        return self._handle_response(
+            requests.post(self.url, headers=headers, json=request)
+        )
 
-def get_response_from_query(query):
-    API_KEY = load_api_key("API.key")
-    
-    response = make_request(API_KEY, query)
-    if response.status_code == 200:
-        result_string = response.json()['choices'][0]['message']['content']
-        return result_string
-    else:
-        return 'ruh roh looks like this request failed'
+    def _handle_response(self, response: requests.Response) -> dict[str, Any]:
+        if response.status_code == 200:
+            result_string = response.json()['choices'][0]['message']['content']
 
-def prompt_with_examples(text):
-    # Load the key
-    API_KEY = load_api_key("API.key")
+            # TODO: use json format here
+            # Updated regex to match "Hatespeech: true/false"
+            hatespeech_match = re.search(r"Hatespeech:\s*(.*)", result_string)
+            explanation_match = re.search(r"Explanation:\s*(.*)", result_string, re.DOTALL)
 
-    # Produce request content
-    content_str = build_content_from_json("examples.json", text)
-    
-    print(content_str)
-    
-    # Get response from make_request 
-    response = make_request(API_KEY, content_str)
-    
-    # Handle the response
-    return handle_response(response)
+            # Get the extracted values
+            hatespeech = hatespeech_match.group(1).strip().lower() if hatespeech_match else None
+            explanation = explanation_match.group(1).strip() if explanation_match else None
 
-print(prompt_with_examples('We love the men!'))
+            # Convert to boolean if needed (optional)
+            if hatespeech in ("true", "false"):
+                hatespeech = hatespeech == "true"
+
+            return {
+                "Hatespeech": hatespeech,
+                "Explanation": explanation
+            }
+        else:
+            raise Exception(f"Got error response from Mistral ({response.status_code}): {response.text}")
+
+if __name__ == "__main__":
+    ctx = PrompterContext("examples.json")
+    print(ctx.make_new_prompt('We love the men!'))
+    print(ctx.make_new_prompt('We love the women!'))
