@@ -9,8 +9,8 @@ class PrompterContext:
     api_key: str
     url: str = "https://api.mistral.ai/v1/chat/completions"
 
-    def __init__(self, examples: str | list[dict[str, Any]], url: str | None = None, history: list[dict[str, Any]] = []):
-        self.history = []
+    def __init__(self, examples: str | list[dict[str, Any]], url: str | None = None, history: list[dict[str, Any]] | None = None):
+        self.history = history if history is not None else []
         self.api_key = PrompterContext._load_api_key()
 
         if isinstance(examples, str):
@@ -53,8 +53,8 @@ class PrompterContext:
         content_lines = self.content_lines()
 
         # Add the final example to be labeled
-        content_lines.append("Using the above examples, complete the final label and explanation:\n")
-        content_lines.append(f"\n    \"transcript\": {transcript},\n")
+        content_lines.append("Using the above examples, complete the final harm_types and explanation:\n")
+        content_lines.append(f"\n    \"transcript\": \"{transcript}\",\n")
 
         new_history_item = self._make_request("\n".join(content_lines)) | {
             "transcript": transcript,
@@ -63,7 +63,7 @@ class PrompterContext:
         return new_history_item
 
     def content_lines(self) -> list[str]:
-        content_lines = ["Using these examples, complete the final label. You must give your response as a JSON object following the schema."]
+        content_lines = ["Using these examples, complete the final classification. You must give your response as a JSON object following the schema."]
         content_lines.append(json.dumps(self.examples))
         content_lines.append("From here on out, the sentences you are given are all part of the same monologue or message. Please take previous sentences as context into account when making your judgement.")
         content_lines.append(json.dumps(self.history))
@@ -92,17 +92,20 @@ class PrompterContext:
                                 "type": "string",
                                 "description": "The text or statement being evaluated for hate speech."
                             },
-                            "label": {
-                                "type": "string",
-                                "enum": ["hatespeech", "potential hatespeech", "not hatespeech"],
-                                "description": "Classification label indicating the level or presence of hate speech."
+                            "harm_types": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "enum": ["targeted_hate", "dehumanization", "incitement", "slur", "stereotype", "exclusion", "none"]
+                                },
+                                "description": "Array of harm type classifications. Use 'none' if no harmful content is present."
                             },
                             "explanation": {
                                 "type": "string",
-                                "description": "A brief explanation or reasoning for the assigned label."
+                                "description": "A brief explanation or reasoning for the assigned harm types, specifying which elements qualify for each type."
                             }
                         },
-                        "required": ["transcript", "label", "explanation"],
+                        "required": ["transcript", "harm_types", "explanation"],
                         "additionalProperties": False,
                     },
                     "name": "classification",
@@ -164,25 +167,50 @@ class PrompterContext:
         if response.status_code == 200:
             return response.json()['choices'][0]['message']['content']
         raise Exception(f"API request failed: {response}")
+    
+    def _harm_types_match(self, harm_types_1: list[str], harm_types_2: list[str]) -> bool:
+        """
+        Compare two harm_types arrays for equality.
+        Returns True if both contain 'none' OR if they contain the same harmful types.
+        """
+        set1 = set(harm_types_1)
+        set2 = set(harm_types_2)
+        
+        # Both are non-harmful
+        if "none" in set1 and "none" in set2:
+            return True
+        
+        # One is harmful, one is not
+        if ("none" in set1) != ("none" in set2):
+            return False
+        
+        # Both are harmful - check if they have the same harm types
+        # Remove 'none' if it somehow appears with other types
+        set1.discard("none")
+        set2.discard("none")
+        
+        return set1 == set2
         
     def prompt_with_examples_and_inversion(self, text: str) -> bool:
         original_result = self.make_new_prompt(text)
-        original_label = original_result.get("label")
+        original_harm_types = original_result.get("harm_types", [])
         explanation_original = original_result.get("explanation")
         
         inverted_text = self._invert_prompt(text)
         inverted_result = self.make_new_prompt(inverted_text)
-        inverted_label = inverted_result.get("label")
+        inverted_harm_types = inverted_result.get("harm_types", [])
         explanation_inverted = inverted_result.get("explanation")
         
-        print("OG explanation:", explanation_original, "with result:", original_label)
-        print("Inv:", inverted_text)
-        print("Inv explanation:", explanation_inverted, "with result:", inverted_label)
+        # print("OG explanation:", explanation_original, "with harm types:", original_harm_types)
+        # print("Inv:", inverted_text)
+        # print("Inv explanation:", explanation_inverted, "with harm types:", inverted_harm_types)
         
-        return original_label == inverted_label
-
+        match = self._harm_types_match(original_harm_types, inverted_harm_types)
+        # print(f"Harm types match: {match}")
+        
+        return match, inverted_text, explanation_inverted
 
 # Example usage (commented out since it requires API key and examples file)
 # context = PrompterContext(examples="examples.json")
 # result = context.prompt_with_examples_and_inversion("All people from third world countries are subhuman")
-# print(f"Labels match: {result}")
+# print(f"Classification is consistent: {result}")

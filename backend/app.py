@@ -43,9 +43,17 @@ def analyze_audio():
 
         # Transcribe the audio file using your AtoT module
         tx = transcribe_audio(filepath, sentence_timestamps=True, model_size="small")
-
+        
+        # Process each sentence and perform inversion testing
+        inversion_results = []
         for i, s in enumerate(tx.sentences, 1):
-            _ = prompter_ctx.make_new_prompt(s.text)
+            match, inverted_text, inverted_harm_types, explanation_inverted = prompter_ctx.prompt_with_examples_and_inversion(s.text)
+            inversion_results.append({
+                "match": match,
+                "inverted_text": inverted_text,
+                "inverted_harm_types": inverted_harm_types,
+                "explanation_inverted": explanation_inverted
+            })
 
         # Prepare the response with full transcript and sentence timings
         sentences = [
@@ -54,10 +62,14 @@ def analyze_audio():
                 "start": s.start,
                 "end": s.end,
                 "duration": s.end - s.start,
-                "label": result["label"],
+                "harm_types": result["harm_types"],
                 "explanation": result["explanation"],
+                "inverted_text": inversion["inverted_text"],
+                "inverted_harm_types": inversion["inverted_harm_types"],
+                "explanation_inverted": inversion["explanation_inverted"],
+                "double_standard_detected": not inversion["match"]
             }
-            for s, result in zip(tx.sentences, prompter_ctx.history)
+            for s, result, inversion in zip(tx.sentences, prompter_ctx.history, inversion_results)
         ]
 
         return jsonify({
@@ -66,7 +78,8 @@ def analyze_audio():
             "sentences": sentences,
             "metadata": {
                 "filename": file.filename,
-                "filepath": filepath
+                "filepath": filepath,
+                "total_double_standards": sum(1 for sent in sentences if sent["double_standard_detected"])
             }
         })
 

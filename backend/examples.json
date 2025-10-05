@@ -1,102 +1,102 @@
 [
     {
         "transcript": "Minorities should leave this country or else",
-        "label": "hatespeech",
-        "explanation": "The implication of 'or else' is incitement of violence and threatens a specific group based on identity."
+        "harm_types": ["incitement", "targeted_hate", "exclusion"],
+        "explanation": "Contains threat of violence ('or else'), explicitly targets minorities, and demands their removal from the country."
     },
     {
         "transcript": "Hi how are you?",
-        "label": "not hatespeech",
-        "explanation": "There is no mention of a hated group of people; the tone is polite and neutral."
+        "harm_types": ["none"],
+        "explanation": "Standard polite greeting with no harmful content or targeting."
     },
     {
         "transcript": "What happened in Tiananmen Square was justified",
-        "label": "hatespeech",
-        "explanation": "Despite low toxicity, the statement supports mass violence, indirectly endorsing harm against dissenting groups."
+        "harm_types": ["incitement"],
+        "explanation": "Endorses state violence against protesters and dissidents, normalizing mass harm against those exercising political rights."
     },
     {
         "transcript": "All immigrants are criminals and parasites",
-        "label": "hatespeech",
-        "explanation": "Generalizing and dehumanizing language directed at an entire group constitutes explicit hate speech."
+        "harm_types": ["targeted_hate", "dehumanization", "stereotype"],
+        "explanation": "Dehumanizes immigrants by calling them 'parasites', applies criminal stereotype to entire group, and expresses hatred toward this population."
     },
     {
         "transcript": "I think that policies should be fair to everyone, regardless of background",
-        "label": "not hatespeech",
-        "explanation": "Promotes inclusion and fairness without targeting or excluding any group."
+        "harm_types": ["none"],
+        "explanation": "Advocates for equality and inclusion without targeting or marginalizing any group."
     },
     {
         "transcript": "Those people are ruining our way of life",
-        "label": "hatespeech",
-        "explanation": "The vague reference to 'those people' is a dog whistle, often used to scapegoat minority groups."
+        "harm_types": ["targeted_hate", "exclusion"],
+        "explanation": "Uses coded language ('those people') as dog whistle to blame an unspecified out-group for societal problems, promoting exclusionary attitudes."
     },
     {
         "transcript": "Let's celebrate our diversity and learn from each other",
-        "label": "not hatespeech",
-        "explanation": "Encourages unity and mutual respect without any hateful or exclusionary tone."
+        "harm_types": ["none"],
+        "explanation": "Promotes positive intergroup relations and mutual respect."
     },
     {
         "transcript": "Go back to where you came from",
-        "label": "hatespeech",
-        "explanation": "Common xenophobic phrase used to marginalize people perceived as outsiders."
+        "harm_types": ["exclusion", "targeted_hate"],
+        "explanation": "Classic xenophobic phrase that denies belonging and citizenship rights based on perceived foreignness or ethnic background."
     },
     {
         "transcript": "You're so annoying when you talk about veganism",
-        "label": "not hatespeech",
-        "explanation": "Rude or personal criticism, but not directed at a protected group or identity."
+        "harm_types": ["none"],
+        "explanation": "Personal criticism about behavior/opinions, not targeting a protected identity or demographic group."
     },
     {
         "transcript": "All Jews control the media",
-        "label": "hatespeech",
-        "explanation": "Classic anti-Semitic trope promoting conspiracy theories and group-based hatred."
+        "harm_types": ["stereotype", "targeted_hate"],
+        "explanation": "Perpetuates antisemitic conspiracy theory attributing disproportionate power to Jewish people, reinforcing historical hate narratives."
     },
     {
         "transcript": "I'm really tired of corrupt politicians, they ruin everything",
-        "label": "not hatespeech",
-        "explanation": "Critical of individuals or roles (politicians), but not based on identity or protected group."
+        "harm_types": ["none"],
+        "explanation": "Criticizes occupational role and behavior (corruption), not an identity-based group."
     },
     {
         "transcript": "Black people are just naturally more violent",
-        "label": "hatespeech",
-        "explanation": "Promotes a harmful racist stereotype implying inherent criminality."
+        "harm_types": ["stereotype", "targeted_hate"],
+        "explanation": "Promotes racist pseudoscientific claim linking race to criminality, perpetuating harmful stereotype used to justify discrimination."
     },
     {
         "transcript": "Your opinion is dumb, but I respect your right to have it",
-        "label": "not hatespeech",
-        "explanation": "Contains mild insult but affirms respect and is not targeted hate."
+        "harm_types": ["none"],
+        "explanation": "Contains mild personal criticism but explicitly affirms respect for differing views; no identity-based targeting."
     },
     {
         "transcript": "Muslims should be banned from this country",
-        "label": "hatespeech",
-        "explanation": "Expresses desire for exclusion based on religious identity, which is discriminatory and hateful."
+        "harm_types": ["exclusion", "targeted_hate"],
+        "explanation": "Advocates for categorical exclusion based solely on religious identity, promoting discriminatory policy against entire religious group."
     },
     {
         "transcript": "Can we talk about the weather instead of politics?",
-        "label": "not hatespeech",
-        "explanation": "Neutral conversational redirection with no hate or bias."
+        "harm_types": ["none"],
+        "explanation": "Neutral conversational pivot with no harmful content."
     },
     {
         "transcript": "These refugees are like cockroaches",
-        "label": "hatespeech",
-        "explanation": "Dehumanizing language using metaphor associated with genocide rhetoric."
+        "harm_types": ["dehumanization", "targeted_hate"],
+        "explanation": "Extreme dehumanization using pest metaphor historically associated with genocide rhetoric (Rwanda, Nazi Germany); targets vulnerable refugee population."
     },
     {
         "transcript": "Trans people are mentally ill freaks",
-        "label": "hatespeech",
-        "explanation": "Combines slurs and pathologizing language targeting a marginalized identity group."
+        "harm_types": ["slur", "targeted_hate", "stereotype"],
+        "explanation": "Contains direct slur ('freaks'), pathologizes transgender identity as mental illness, and expresses hatred toward transgender community."
     },
     {
         "transcript": "People who commit crimes should face justice",
-        "label": "not hatespeech",
-        "explanation": "A general opinion about justice without identity-based targeting or hate."
+        "harm_types": ["none"],
+        "explanation": "General statement about criminal justice without targeting any identity group."
     },
     {
         "transcript": "White people are the worst thing to happen to this planet",
-        "label": "hatespeech",
-        "explanation": "Generalized hateful comment targeting a racial group, regardless of historical context."
+        "harm_types": ["targeted_hate"],
+        "explanation": "Expresses hatred toward racial group through sweeping condemnation, regardless of power dynamics or historical context."
     },
     {
         "transcript": "I don't agree with your religion, but I respect your right to practice it",
-        "label": "not hatespeech",
-        "explanation": "Demonstrates disagreement without hate; emphasizes tolerance."
+        "harm_types": ["none"],
+        "explanation": "Expresses personal disagreement while explicitly affirming religious freedom and tolerance."
     }
 ]
