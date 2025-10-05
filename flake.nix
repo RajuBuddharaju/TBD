@@ -129,6 +129,8 @@
             wikipedia
 
             flask
+            mistral-common
+            pydantic
           ]);
 
         packages = with pkgs; [

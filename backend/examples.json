@@ -1,102 +1,102 @@
 [
     {
-        "Transcript": "Minorities should leave this country or else",
-        "Hatespeech": "true",
-        "Explanation": "The implication of 'or else' is incitement of violence and threatens a specific group based on identity."
+        "transcript": "Minorities should leave this country or else",
+        "label": "hatespeech",
+        "explanation": "The implication of 'or else' is incitement of violence and threatens a specific group based on identity."
     },
     {
-        "Transcript": "Hi how are you?",
-        "Hatespeech": "false",
-        "Explanation": "There is no mention of a hated group of people; the tone is polite and neutral."
+        "transcript": "Hi how are you?",
+        "label": "not hatespeech",
+        "explanation": "There is no mention of a hated group of people; the tone is polite and neutral."
     },
     {
-        "Transcript": "What happened in Tiananmen Square was justified",
-        "Hatespeech": "true",
-        "Explanation": "Despite low toxicity, the statement supports mass violence, indirectly endorsing harm against dissenting groups."
+        "transcript": "What happened in Tiananmen Square was justified",
+        "label": "hatespeech",
+        "explanation": "Despite low toxicity, the statement supports mass violence, indirectly endorsing harm against dissenting groups."
     },
     {
-        "Transcript": "All immigrants are criminals and parasites",
-        "Hatespeech": "true",
-        "Explanation": "Generalizing and dehumanizing language directed at an entire group constitutes explicit hate speech."
+        "transcript": "All immigrants are criminals and parasites",
+        "label": "hatespeech",
+        "explanation": "Generalizing and dehumanizing language directed at an entire group constitutes explicit hate speech."
     },
     {
-        "Transcript": "I think that policies should be fair to everyone, regardless of background",
-        "Hatespeech": "false",
-        "Explanation": "Promotes inclusion and fairness without targeting or excluding any group."
+        "transcript": "I think that policies should be fair to everyone, regardless of background",
+        "label": "not hatespeech",
+        "explanation": "Promotes inclusion and fairness without targeting or excluding any group."
     },
     {
-        "Transcript": "Those people are ruining our way of life",
-        "Hatespeech": "true",
-        "Explanation": "The vague reference to 'those people' is a dog whistle, often used to scapegoat minority groups."
+        "transcript": "Those people are ruining our way of life",
+        "label": "hatespeech",
+        "explanation": "The vague reference to 'those people' is a dog whistle, often used to scapegoat minority groups."
     },
     {
-        "Transcript": "Let's celebrate our diversity and learn from each other",
-        "Hatespeech": "false",
-        "Explanation": "Encourages unity and mutual respect without any hateful or exclusionary tone."
+        "transcript": "Let's celebrate our diversity and learn from each other",
+        "label": "not hatespeech",
+        "explanation": "Encourages unity and mutual respect without any hateful or exclusionary tone."
     },
     {
-        "Transcript": "Go back to where you came from",
-        "Hatespeech": "true",
-        "Explanation": "Common xenophobic phrase used to marginalize people perceived as outsiders."
+        "transcript": "Go back to where you came from",
+        "label": "hatespeech",
+        "explanation": "Common xenophobic phrase used to marginalize people perceived as outsiders."
     },
     {
-        "Transcript": "You're so annoying when you talk about veganism",
-        "Hatespeech": "false",
-        "Explanation": "Rude or personal criticism, but not directed at a protected group or identity."
+        "transcript": "You're so annoying when you talk about veganism",
+        "label": "not hatespeech",
+        "explanation": "Rude or personal criticism, but not directed at a protected group or identity."
     },
     {
-        "Transcript": "All Jews control the media",
-        "Hatespeech": "true",
-        "Explanation": "Classic anti-Semitic trope promoting conspiracy theories and group-based hatred."
+        "transcript": "All Jews control the media",
+        "label": "hatespeech",
+        "explanation": "Classic anti-Semitic trope promoting conspiracy theories and group-based hatred."
     },
     {
-        "Transcript": "I'm really tired of corrupt politicians, they ruin everything",
-        "Hatespeech": "false",
-        "Explanation": "Critical of individuals or roles (politicians), but not based on identity or protected group."
+        "transcript": "I'm really tired of corrupt politicians, they ruin everything",
+        "label": "not hatespeech",
+        "explanation": "Critical of individuals or roles (politicians), but not based on identity or protected group."
     },
     {
-        "Transcript": "Black people are just naturally more violent",
-        "Hatespeech": "true",
-        "Explanation": "Promotes a harmful racist stereotype implying inherent criminality."
+        "transcript": "Black people are just naturally more violent",
+        "label": "hatespeech",
+        "explanation": "Promotes a harmful racist stereotype implying inherent criminality."
     },
     {
-        "Transcript": "Your opinion is dumb, but I respect your right to have it",
-        "Hatespeech": "false",
-        "Explanation": "Contains mild insult but affirms respect and is not targeted hate."
+        "transcript": "Your opinion is dumb, but I respect your right to have it",
+        "label": "not hatespeech",
+        "explanation": "Contains mild insult but affirms respect and is not targeted hate."
     },
     {
-        "Transcript": "Muslims should be banned from this country",
-        "Hatespeech": "true",
-        "Explanation": "Expresses desire for exclusion based on religious identity, which is discriminatory and hateful."
+        "transcript": "Muslims should be banned from this country",
+        "label": "hatespeech",
+        "explanation": "Expresses desire for exclusion based on religious identity, which is discriminatory and hateful."
     },
     {
-        "Transcript": "Can we talk about the weather instead of politics?",
-        "Hatespeech": "false",
-        "Explanation": "Neutral conversational redirection with no hate or bias."
+        "transcript": "Can we talk about the weather instead of politics?",
+        "label": "not hatespeech",
+        "explanation": "Neutral conversational redirection with no hate or bias."
     },
     {
-        "Transcript": "These refugees are like cockroaches",
-        "Hatespeech": "true",
-        "Explanation": "Dehumanizing language using metaphor associated with genocide rhetoric."
+        "transcript": "These refugees are like cockroaches",
+        "label": "hatespeech",
+        "explanation": "Dehumanizing language using metaphor associated with genocide rhetoric."
     },
     {
-        "Transcript": "Trans people are mentally ill freaks",
-        "Hatespeech": "true",
-        "Explanation": "Combines slurs and pathologizing language targeting a marginalized identity group."
+        "transcript": "Trans people are mentally ill freaks",
+        "label": "hatespeech",
+        "explanation": "Combines slurs and pathologizing language targeting a marginalized identity group."
     },
     {
-        "Transcript": "People who commit crimes should face justice",
-        "Hatespeech": "false",
-        "Explanation": "A general opinion about justice without identity-based targeting or hate."
+        "transcript": "People who commit crimes should face justice",
+        "label": "not hatespeech",
+        "explanation": "A general opinion about justice without identity-based targeting or hate."
     },
     {
-        "Transcript": "White people are the worst thing to happen to this planet",
-        "Hatespeech": "true",
-        "Explanation": "Generalized hateful comment targeting a racial group, regardless of historical context."
+        "transcript": "White people are the worst thing to happen to this planet",
+        "label": "hatespeech",
+        "explanation": "Generalized hateful comment targeting a racial group, regardless of historical context."
     },
     {
-        "Transcript": "I don't agree with your religion, but I respect your right to practice it",
-        "Hatespeech": "false",
-        "Explanation": "Demonstrates disagreement without hate; emphasizes tolerance."
+        "transcript": "I don't agree with your religion, but I respect your right to practice it",
+        "label": "not hatespeech",
+        "explanation": "Demonstrates disagreement without hate; emphasizes tolerance."
     }
 ]

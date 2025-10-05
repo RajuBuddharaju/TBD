@@ -54,9 +54,8 @@ def analyze_audio():
                 "start": s.start,
                 "end": s.end,
                 "duration": s.end - s.start,
-                "label": result["Hatespeech"],
-                "explanation": result["Explanation"],
-                "toxicity": result["Toxicity"],
+                "label": result["label"],
+                "explanation": result["explanation"],
             }
             for s, result in zip(tx.sentences, prompter_ctx.history)
         ]

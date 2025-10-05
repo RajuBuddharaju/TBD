@@ -12,7 +12,6 @@ interface Sentence {
   duration: number
   label?: string
   explanation?: string
-  toxicity?: number
 }
 
 interface ResultsDisplayProps {
@@ -25,20 +24,13 @@ interface ResultsDisplayProps {
 }
 
 export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
-  const getSeverityFromToxicity = (toxicity?: number): "high" | "medium" | "low" => {
-    if (!toxicity) return "low"
-    if (toxicity >= 70) return "high"
-    if (toxicity >= 40) return "medium"
-    return "low"
-  }
-
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case "high":
+      case "hatespeech":
         return "bg-destructive/10 text-destructive border-destructive/20"
-      case "medium":
+      case "potential hatespeech":
         return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-      case "low":
+      case "not hatespeech":
         return "bg-blue-500/10 text-blue-500 border-blue-500/20"
       default:
         return "bg-muted text-muted-foreground"
@@ -53,7 +45,7 @@ export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
 
   const totalDuration = results.sentences.length > 0 ? results.sentences[results.sentences.length - 1].end : 0
 
-  const highSeverityCount = results.sentences.filter((s) => s.toxicity && s.toxicity >= 70).length
+  const highSeverityCount = results.sentences.filter((s) => s.label === "hatespeech").length
 
   return (
     <section className="mb-16">
@@ -103,7 +95,6 @@ export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
         <h3 className="text-xl font-semibold text-foreground mb-4">Sentence Analysis</h3>
         <div className="space-y-4">
           {results.sentences.map((sentence, index) => {
-            const severity = getSeverityFromToxicity(sentence.toxicity)
             return (
               <div
                 key={index}
@@ -116,11 +107,7 @@ export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <Badge className={getSeverityColor(severity)}>{severity.toUpperCase()}</Badge>
-                    {sentence.toxicity !== undefined && (
-                      <span className="text-xs text-muted-foreground">Toxicity: {sentence.toxicity.toFixed(1)}%</span>
-                    )}
-                    {sentence.label && <Badge variant="outline">{sentence.label}</Badge>}
+                    {sentence.label && <Badge className={getSeverityColor(sentence.label)} variant="outline">{sentence.label}</Badge>}
                   </div>
                   <p className="text-sm text-foreground mb-2 font-medium">{sentence.text}</p>
                   {sentence.explanation && (

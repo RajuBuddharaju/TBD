@@ -1,7 +1,5 @@
 import requests
 import json
-import re
-import pretrained
 
 from typing import Any
 
@@ -18,8 +16,6 @@ class PrompterContext:
         if isinstance(examples, str):
             with open(examples, "r") as f:
                 self.examples = json.load(f)
-                for ex in self.examples:
-                    ex["Toxicity"] = pretrained.get_hate_confidence(ex["Transcript"])
         else:
             self.examples = examples
 
@@ -55,33 +51,22 @@ class PrompterContext:
 
     def make_new_prompt(self, transcript: str):
         content_lines = self.content_lines()
-        toxicity = pretrained.get_hate_confidence(transcript)
 
         # Add the final example to be labeled
         content_lines.append("Using the above examples, complete the final label and explanation:\n")
-        content_lines.append(f"Transcript: {transcript}")
-        content_lines.append(f"Toxicity: {toxicity}")
+        content_lines.append(f"\n    \"transcript\": {transcript},\n")
 
         new_history_item = self._make_request("\n".join(content_lines)) | {
-            "Transcript": transcript,
-            "Toxicity": f"{toxicity}",
+            "transcript": transcript,
         }
         self.history.append(new_history_item)
         return new_history_item
 
     def content_lines(self) -> list[str]:
-        content_lines = ["Using these examples, complete the final label:"]
-        for ex in self.examples:
-            content_lines.append(f"Transcript: {ex['Transcript']}")
-            content_lines.append(f"Toxicity: {ex['Toxicity']}")
-            content_lines.append(f"Hatespeech: {ex['Hatespeech']}")
-            content_lines.append(f"Explanation: {ex['Explanation']}\n")
-
-        for ex in self.history:
-            content_lines.append(f"Transcript: {ex['Transcript']}")
-            content_lines.append(f"Toxicity: {ex['Toxicity']}")
-            content_lines.append(f"Hatespeech: {ex['Hatespeech']}")
-            content_lines.append(f"Explanation: {ex['Explanation']}\n")
+        content_lines = ["Using these examples, complete the final label. You must give your response as a JSON object following the schema."]
+        content_lines.append(json.dumps(self.examples))
+        content_lines.append("From here on out, the sentences you are given are all part of the same monologue or message. Please take previous sentences as context into account when making your judgement.")
+        content_lines.append(json.dumps(self.history))
 
         return content_lines
 
@@ -96,7 +81,35 @@ class PrompterContext:
             "messages": [
                 {"role": "user", "content": content}
             ],
-            "temperature": 0.1
+            "temperature": 0.1,
+            "response_format": {
+                "type": "json_object",
+                "json_schema": {
+                    "schema": {
+                        "title": "HateSpeechClassification",
+                        "type": "object",
+                        "properties": {
+                            "transcript": {
+                                "type": "string",
+                                "description": "The text or statement being evaluated for hate speech."
+                            },
+                            "label": {
+                                "type": "string",
+                                "enum": ["hatespeech", "potential hatespeech", "not hatespeech"],
+                                "description": "Classification label indicating the level or presence of hate speech."
+                            },
+                            "explanation": {
+                                "type": "string",
+                                "description": "A brief explanation or reasoning for the assigned label."
+                            }
+                        },
+                        "required": ["transcript", "label", "explanation"],
+                        "additionalProperties": False,
+                    },
+                    "name": "classification",
+                    "strict": True,
+                },
+            },
         }
 
         # Make the request
@@ -107,26 +120,9 @@ class PrompterContext:
     def _handle_response(self, response: requests.Response) -> dict[str, Any]:
         if response.status_code == 200:
             result_string = response.json()['choices'][0]['message']['content']
+            return json.loads(result_string)
 
-            # TODO: use json format here
-            # Updated regex to match "Hatespeech: true/false"
-            hatespeech_match = re.search(r"Hatespeech:\s*(.*)", result_string)
-            explanation_match = re.search(r"Explanation:\s*(.*)", result_string, re.DOTALL)
-
-            # Get the extracted values
-            hatespeech = hatespeech_match.group(1).strip().lower() if hatespeech_match else None
-            explanation = explanation_match.group(1).strip() if explanation_match else None
-
-            # Convert to boolean if needed (optional)
-            if hatespeech in ("true", "false"):
-                hatespeech = hatespeech == "true"
-
-            return {
-                "Hatespeech": hatespeech,
-                "Explanation": explanation
-            }
-        else:
-            raise Exception(f"Got error response from Mistral ({response.status_code}): {response.text}")
+        raise Exception(f"Mistral dun goofed: {response}")
 
 if __name__ == "__main__":
     ctx = PrompterContext("examples.json")
