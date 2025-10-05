@@ -13,6 +13,7 @@ ALLOWED_EXTENSIONS = {"wav", "mp3", "mp4", "webm"}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config["SECRET_KEY"] = "changeme"
+app.config["SESSION_TYPE"] = "filesystem"
 
 
 def allowed_file(filename: str):
@@ -85,6 +86,7 @@ def analyze_audio():
             }
         })
 
+    session.clear()
     return jsonify({"error": "File type not allowed"}), 400
 
 if __name__ == '__main__':

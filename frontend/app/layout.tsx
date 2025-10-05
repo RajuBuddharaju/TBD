@@ -4,7 +4,10 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
+import { setGlobalDispatcher, Agent } from "undici"
 import "./globals.css"
+
+setGlobalDispatcher(new Agent({ connect: { timeout: 60_000 } }))
 
 export const metadata: Metadata = {
   title: "AIMI - Automated Identification of Malicious Intent",

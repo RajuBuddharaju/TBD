@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 
 from typing import Any
 
@@ -8,6 +9,7 @@ class PrompterContext:
     history: list[dict[str, Any]]
     api_key: str
     url: str = "https://api.mistral.ai/v1/chat/completions"
+    total_prompts = 0
 
     def __init__(self, examples: str | list[dict[str, Any]], url: str | None = None, history: list[dict[str, Any]] | None = None):
         self.history = history if history is not None else []
@@ -21,6 +23,8 @@ class PrompterContext:
 
         if url is not None:
             self.url = url 
+
+        self.total_prompts = 0
 
     def to_dict(self):
         return {
@@ -56,12 +60,19 @@ class PrompterContext:
         content_lines.append("Using the above examples, complete the final harm_types and explanation:\n")
         content_lines.append(f"\n    \"transcript\": \"{transcript}\",\n")
 
-        new_history_item = self._make_request("\n".join(content_lines)) | {
+        resp = self._make_request("\n".join(content_lines))
+        print(resp)
+        new_history_item = resp | {
             "transcript": transcript,
         }
 
         if commit:
             self.history.append(new_history_item)
+
+        self.total_prompts += 1
+        if self.total_prompts % 2 == 0:
+            time.sleep(1.5)
+
         return new_history_item
 
     def content_lines(self) -> list[str]:
