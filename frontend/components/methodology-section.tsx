@@ -22,9 +22,15 @@ export function MethodologySection() {
             <h3 className="text-xl font-semibold text-foreground">Definition of Extremist Content</h3>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-            We define extremist content as speech that promotes violence, hatred, or discrimination against individuals
-            or groups based on protected characteristics. Our definitions are informed by legal frameworks, academic
-            research, and consultation with domain experts.
+            The prompt-driven LLM identifies linguistic patterns that express hatred, threats, incitement, insults, 
+            or identity-targeted hostility. Using our curated examples, the model learns to distinguish between 
+            legitimate ideological criticism and speech that calls for harm or exclusion. The examples are created 
+            with reference to the United Nations definition of hate speech: 
+            <em>
+              "Extremist speech is speech that advocates, glorifies, or incites violence, hatred, or discrimination 
+              against individuals or groups based on characteristics such as race, religion, gender, ethnicity, 
+              nationality, sexual orientation, or political affiliation."
+            </em>
           </p>
         </Card>
 
@@ -36,9 +42,14 @@ export function MethodologySection() {
             <h3 className="text-xl font-semibold text-foreground">Detection Methodology</h3>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-            Our system uses advanced speech recognition combined with natural language processing to identify
-            potentially harmful content. We employ multiple detection layers including keyword analysis, contextual
-            understanding, and sentiment analysis.
+            Our system employs a multi-stage detection strategy to identify hate speech in audio content. 
+            It combines speech-to-text conversion with context-aware language modeling and inversion-based 
+            bias analysis. First, the textual content from the uploaded audio is extracted.Then, each segment gets processed through a prompt-driven LLM that is guided by examples labelled 
+            as either hate-speech or not hate-speech along with explanation for each classification. These examples 
+            range from single sentences to full paragraphs. Thus, by this approach the LLM is able to reason over both 
+            local and broader context. To eliminate contextual bias and double standards, our model performs an inversion 
+            test that rephrases and/or inverts the meaning of the sentence. This way, we ensure that the outputted 
+            classification remains consistent overall.
           </p>
         </Card>
       </div>
