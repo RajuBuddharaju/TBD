@@ -72,6 +72,8 @@ def analyze_audio():
             for s, result, inversion in zip(tx.sentences, prompter_ctx.history, inversion_results)
         ]
 
+        print(sentences[0]["harm_types"])
+
         return jsonify({
             "status": "success",
             "full_transcript": tx.text,

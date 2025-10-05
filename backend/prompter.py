@@ -49,7 +49,7 @@ class PrompterContext:
             raise Exception(f"Error reading API key: {e}")
 
 
-    def make_new_prompt(self, transcript: str):
+    def make_new_prompt(self, transcript: str, commit: bool = True):
         content_lines = self.content_lines()
 
         # Add the final example to be labeled
@@ -59,7 +59,9 @@ class PrompterContext:
         new_history_item = self._make_request("\n".join(content_lines)) | {
             "transcript": transcript,
         }
-        self.history.append(new_history_item)
+
+        if commit:
+            self.history.append(new_history_item)
         return new_history_item
 
     def content_lines(self) -> list[str]:
@@ -191,13 +193,13 @@ class PrompterContext:
         
         return set1 == set2
         
-    def prompt_with_examples_and_inversion(self, text: str) -> bool:
+    def prompt_with_examples_and_inversion(self, text: str):
         original_result = self.make_new_prompt(text)
         original_harm_types = original_result.get("harm_types", [])
         explanation_original = original_result.get("explanation")
         
         inverted_text = self._invert_prompt(text)
-        inverted_result = self.make_new_prompt(inverted_text)
+        inverted_result = self.make_new_prompt(inverted_text, commit=False)
         inverted_harm_types = inverted_result.get("harm_types", [])
         explanation_inverted = inverted_result.get("explanation")
         
@@ -208,7 +210,7 @@ class PrompterContext:
         match = self._harm_types_match(original_harm_types, inverted_harm_types)
         # print(f"Harm types match: {match}")
         
-        return match, inverted_text, explanation_inverted
+        return match, inverted_harm_types, inverted_text, explanation_inverted
 
 # Example usage (commented out since it requires API key and examples file)
 # context = PrompterContext(examples="examples.json")

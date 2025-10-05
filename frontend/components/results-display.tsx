@@ -10,7 +10,7 @@ interface Sentence {
   start: number
   end: number
   duration: number
-  label?: string
+  harm_types?: string
   explanation?: string
 }
 
@@ -24,13 +24,18 @@ interface ResultsDisplayProps {
 }
 
 export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
+  // ["incitement", "targeted_hate", "dehumanization", "stereotype", "exclusion", "none", "slur"]
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case "hatespeech":
+      case "slur":
+      case "targeted_hate":
+      case "dehumanization":
         return "bg-destructive/10 text-destructive border-destructive/20"
-      case "potential hatespeech":
+      case "incitement":
+      case "exclusion":
+      case "stereotype":
         return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-      case "not hatespeech":
+      case "none":
         return "bg-blue-500/10 text-blue-500 border-blue-500/20"
       default:
         return "bg-muted text-muted-foreground"
@@ -45,7 +50,7 @@ export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
 
   const totalDuration = results.sentences.length > 0 ? results.sentences[results.sentences.length - 1].end : 0
 
-  const highSeverityCount = results.sentences.filter((s) => s.label === "hatespeech").length
+  const highSeverityCount = results.sentences.filter((s) => ["slur", "targeted_hate", "dehumanization"].includes(s.harm_types)).length
 
   return (
     <section className="mb-16">
@@ -107,7 +112,7 @@ export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    {sentence.label && <Badge className={getSeverityColor(sentence.label)} variant="outline">{sentence.label}</Badge>}
+                    {sentence.harm_types.map((b, _) => (<Badge className={getSeverityColor(b)} variant="outline">{b}</Badge>))}
                   </div>
                   <p className="text-sm text-foreground mb-2 font-medium">{sentence.text}</p>
                   {sentence.explanation && (
