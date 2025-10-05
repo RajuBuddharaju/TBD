@@ -1,4 +1,5 @@
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { UploadSection } from "@/components/upload-section"
 import { MethodologySection } from "@/components/methodology-section"
 
@@ -10,6 +11,7 @@ export default function Home() {
         <UploadSection />
         <MethodologySection />
       </main>
+      <Footer />
     </div>
   )
 }

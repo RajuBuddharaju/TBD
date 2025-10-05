@@ -10,9 +10,9 @@ export function Header() {
               <Shield className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">ExtremeGuard</h1>
+              <h1 className="text-xl font-bold text-foreground">AIMI</h1>
               <p className="text-sm text-muted-foreground">
-                Responsible Audio Screening for Inclusive Speech Technology
+                Automated Identification of Malicious Intent
               </p>
             </div>
           </div>
