@@ -62,6 +62,9 @@ class PrompterContext:
 
         resp = self._make_request("\n".join(content_lines))
         print(resp)
+        if isinstance(resp, list):
+            resp = resp[0]
+
         new_history_item = resp | {
             "transcript": transcript,
         }
@@ -76,7 +79,11 @@ class PrompterContext:
         return new_history_item
 
     def content_lines(self) -> list[str]:
-        content_lines = ["Using these examples, complete the final classification. You must give your response as a JSON object following the schema."]
+        content_lines = [
+            "You are a talented linguist and sociologist tasked with identifying malice and hatefulness in transcribed speech or written text.",
+            "Some important key facts: If the text is reproducing hateful speech by quotation or paraphrase, it does not immediately count as hate speech. However, if the input text contains a lot of such reproductions, it may be an attempt to disguise real malicious intent, and should be flagged as so.",
+            "Using these examples, complete the final classification. You must give your response as a JSON object following the schema. Please do not deviate from the schema."
+        ]
         content_lines.append(json.dumps(self.examples))
         content_lines.append("From here on out, the sentences you are given are all part of the same monologue or message. Please take previous sentences as context into account when making your judgement.")
         content_lines.append(json.dumps(self.history))
@@ -109,7 +116,8 @@ class PrompterContext:
                                 "type": "array",
                                 "items": {
                                     "type": "string",
-                                    "enum": ["targeted_hate", "dehumanization", "incitement", "slur", "stereotype", "exclusion", "none"]
+                                    "enum": ["targeted_hate", "dehumanization", "incitement", "slur", "stereotype", "exclusion", "none"],
+                                    "description": "The specific way(s) in which this particular statement is (or not) harmful."
                                 },
                                 "description": "Array of harm type classifications. Use 'none' if no harmful content is present."
                             },

@@ -119,6 +119,9 @@ export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
                   {sentence.explanation && (
                     <p className="text-xs text-muted-foreground italic">{sentence.explanation}</p>
                   )}
+                  {sentence.double_standard_detected && (
+                    <p className="text-xs text-muted-foreground italic">This might be an instance of a double standard: {sentence.explanation_inversion}</p>
+                  )}
                 </div>
               </div>
             )
