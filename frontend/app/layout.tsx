@@ -7,9 +7,8 @@ import { Suspense } from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "ExtremeGuard - Responsible Audio Screening",
+  title: "AIMI - Automated Identification of Malicious Intent",
   description: "Responsible Audio Screening for Inclusive Speech Technology",
-  generator: "v0.app",
 }
 
 export default function RootLayout({
