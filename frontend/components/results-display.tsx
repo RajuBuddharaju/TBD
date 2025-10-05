@@ -27,6 +27,7 @@ export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
   // ["incitement", "targeted_hate", "dehumanization", "stereotype", "exclusion", "none", "slur"]
   const getSeverityColor = (severity: string) => {
     switch (severity) {
+      case "racial_slur":
       case "slur":
       case "targeted_hate":
       case "dehumanization":
@@ -112,7 +113,7 @@ export function ResultsDisplay({ results, onReset }: ResultsDisplayProps) {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    {sentence.harm_types.map((b, _) => (<Badge className={getSeverityColor(b)} variant="outline">{b}</Badge>))}
+                    {sentence.harm_types && sentence.harm_types.map((b, _) => (<Badge className={getSeverityColor(b)} variant="outline">{b}</Badge>))}
                   </div>
                   <p className="text-sm text-foreground mb-2 font-medium">{sentence.text}</p>
                   {sentence.explanation && (
